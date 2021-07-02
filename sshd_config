@@ -26,26 +26,6 @@
 AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
 AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
 AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
-AcceptEnv XMODIFIERS
-
-# disallow ssh-agent forwarding to prevent lateral movement
-AllowAgentForwarding no
-
-# prevent TCP ports from being forwarded over SSH tunnels
-# **please be aware that disabling TCP forwarding does not prevent port forwarding**
-# any user with an interactive login shell can spin up his/her own instance of sshd
-AllowTcpForwarding no
-
-# prevent StreamLocal (Unix-domain socket) forwarding
-AllowStreamLocalForwarding no
-
-# disables all forwarding features
-# overrides all other forwarding switches
-DisableForwarding yes
-
-# disallow remote hosts from connecting to forwarded ports
-# i.e. forwarded ports are forced to bind to 127.0.0.1 instad of 0.0.0.0
-GatewayPorts no
 
 # prevent tun device forwarding
 PermitTunnel no
@@ -58,40 +38,32 @@ X11Forwarding no
 
 ########## Authentication ##########
 
-# permit only the specified users to login
-#AllowUsers k4yt3x
-
-# permit only users within the specified groups to login
-#AllowGroups k4yt3x
-
 # uncomment the following options to permit only pubkey authentication
 # be aware that this will disable password authentication
 #   - AuthenticationMethods: permitted authentication methods
 #   - PasswordAuthentication: set to no to disable password authentication
 #   - UsePAM: set to no to disable all PAM authentication, also disables PasswordAuthentication when set to no
-#AuthenticationMethods publickey
-#PasswordAuthentication no
-#UsePAM no
+AuthenticationMethods publickey
+PasswordAuthentication no
 
 # PAM authentication enabled to make password authentication available
 # remove this if password authentication is not needed
 UsePAM yes
 
-# challenge-response authentication backend it not configured by default
-# therefore, it is set to "no" by default to avoid the use of an unconfigured backend
-ChallengeResponseAuthentication no
-
 # set maximum authenticaion retries to prevent brute force attacks
-MaxAuthTries 3
+MaxAuthTries 10
 
 # disallow connecting using empty passwords
 PermitEmptyPasswords no
 
 # prevent root from being logged in via SSH
-PermitRootLogin no
+PermitRootLogin prohibit-password
 
 # enable pubkey authentication
 PubkeyAuthentication yes
+
+# Disable host based authentication
+HostbasedAuthentication no
 
 ########## Cryptography ##########
 
@@ -108,23 +80,20 @@ KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-grou
 ########## Connection Preferences ##########
 
 # number of client alive messages sent without client responding
-ClientAliveCountMax 2
+ClientAliveCountMax 30
 
 # send a keepalive message to the client when the session has been idle for 300 seconds
 # this prevents/detects connection timeouts
-ClientAliveInterval 300
+ClientAliveInterval 5
 
 # compression before encryption might cause security issues
 Compression no
-
-# prevent SSH trust relationships from allowing lateral movements
-IgnoreRhosts yes
 
 # log verbosely for addtional information
 #LogLevel VERBOSE
 
 # allow a maximum of two multiplexed sessions over a single TCP connection
-MaxSessions 2
+MaxSessions 10
 
 # enforce SSH server to only use SSH protocol version 2
 # SSHv1 contains security issues and should be avoided at all costs
